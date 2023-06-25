@@ -1,0 +1,66 @@
+import java.util.Scanner;
+
+public class FlipSort {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        // Read the input numbers
+        System.out.print("Enter the numbers (space-separated): ");
+        String numbersInput = input.nextLine();
+
+        // Split the input string into individual numbers
+        String[] numbersArray = numbersInput.split(" ");
+
+        // Convert the numbers to an integer array
+        int[] numbers = new int[numbersArray.length];
+        for (int i = 0; i < numbersArray.length; i++) {
+            numbers[i] = Integer.parseInt(numbersArray[i]);
+        }
+
+        // Sort the numbers using flipSort and count the flips
+        int flips = flipSort(numbers);
+
+        // Display the sorted numbers and the number of flips
+        System.out.println("Sorted numbers: " + arrayToString(numbers));
+        System.out.println("Minimum number of flips: " + flips);
+    }
+
+    // Sorts the numbers array using the Flip approach and returns the minimum number of flips required
+    public static int flipSort(int[] numbers) {
+        int flips = 0;
+        boolean sorted = false;
+
+        while (!sorted) {
+            sorted = true;
+
+            for (int i = 0; i < numbers.length - 1; i++) {
+                if (numbers[i] > numbers[i + 1]) {
+                    // Perform a flip by swapping adjacent numbers
+                    int temp = numbers[i];
+                    numbers[i] = numbers[i + 1];
+                    numbers[i + 1] = temp;
+
+                    flips++;
+                    sorted = false;
+                }
+            }
+        }
+
+        return flips;
+    }
+
+    // Converts an integer array to a string representation
+    public static String arrayToString(int[] numbers) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < numbers.length; i++) {
+            sb.append(numbers[i]);
+
+            if (i != numbers.length - 1) {
+                sb.append(" ");
+            }
+        }
+
+        return sb.toString();
+    }
+}
