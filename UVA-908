@@ -1,0 +1,105 @@
+import java.util.*;
+
+class HighSpeedLine {
+    int site1;
+    int site2;
+    int cost;
+
+    public HighSpeedLine(int site1, int site2, int cost) {
+        this.site1 = site1;
+        this.site2 = site2;
+        this.cost = cost;
+    }
+}
+
+public class HighSpeedLineSelection {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the number of computer sites, existing lines, and new lines
+        System.out.print("Enter the number of computer sites: ");
+        int N = scanner.nextInt();
+
+        System.out.print("Enter the number of existing high-speed lines: ");
+        int M = scanner.nextInt();
+
+        System.out.print("Enter the number of new high-speed lines: ");
+        int K = scanner.nextInt();
+
+        // Read the existing high-speed lines
+        List<HighSpeedLine> existingLines = new ArrayList<>();
+        System.out.println("Enter the existing high-speed lines (site1, site2, cost):");
+        for (int i = 0; i < M; i++) {
+            int site1 = scanner.nextInt();
+            int site2 = scanner.nextInt();
+            int cost = scanner.nextInt();
+            existingLines.add(new HighSpeedLine(site1, site2, cost));
+        }
+
+        // Read the new high-speed lines
+        List<HighSpeedLine> newLines = new ArrayList<>();
+        System.out.println("Enter the new high-speed lines (site1, site2, cost):");
+        for (int i = 0; i < K; i++) {
+            int site1 = scanner.nextInt();
+            int site2 = scanner.nextInt();
+            int cost = scanner.nextInt();
+            newLines.add(new HighSpeedLine(site1, site2, cost));
+        }
+
+        // Solve the problem and find the new set T
+        List<HighSpeedLine> setT = selectHighSpeedLines(N, existingLines, newLines);
+
+        // Calculate the total cost
+        int totalCost = 0;
+        for (HighSpeedLine line : setT) {
+            totalCost += line.cost;
+        }
+
+        // Print the new set T and the total cost
+        System.out.println("New set T:");
+        for (HighSpeedLine line : setT) {
+            System.out.println("Site " + line.site1 + " to Site " + line.site2 + " (Cost: " + line.cost + ")");
+        }
+        System.out.println("Total Cost: " + totalCost);
+
+        scanner.close();
+    }
+
+    public static List<HighSpeedLine> selectHighSpeedLines(int N, List<HighSpeedLine> existingLines,
+                                                          List<HighSpeedLine> newLines) {
+        // Combine existing lines and new lines
+        List<HighSpeedLine> allLines = new ArrayList<>(existingLines);
+        allLines.addAll(newLines);
+
+        // Sort all lines based on cost in ascending order
+        Collections.sort(allLines, Comparator.comparingInt(line -> line.cost));
+
+        // Initialize disjoint set data structure
+        int[] parent = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            parent[i] = i;
+        }
+
+        // Select lines from least cost to highest cost
+        List<HighSpeedLine> selectedLines = new ArrayList<>();
+        for (HighSpeedLine line : allLines) {
+            int parent1 = findParent(line.site1, parent);
+            int parent2 = findParent(line.site2, parent);
+
+            // If the sites are not already connected, add the line to the selected set
+            if (parent1 != parent2) {
+                selectedLines.add(line);
+                parent[parent2] = parent1;
+            }
+        }
+
+        return selectedLines;
+    }
+
+    private static int findParent(int site, int[] parent) {
+        if (parent[site] != site) {
+            parent[site] = findParent(parent[site], parent);
+        }
+        return parent[site];
+    }
+}
