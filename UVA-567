@@ -1,0 +1,75 @@
+import java.util.*;
+
+public class RiskGame {
+    private int[][] adjacencyMatrix;
+    private int numCountries;
+
+    public RiskGame(int numCountries) {
+        this.numCountries = numCountries;
+        adjacencyMatrix = new int[numCountries][numCountries];
+    }
+
+    public void addConnection(int country1, int country2) {
+        adjacencyMatrix[country1][country2] = 1;
+        adjacencyMatrix[country2][country1] = 1;
+    }
+
+    public int findMinimumConqueredCountries(int startCountry, int destinationCountry) {
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] visited = new boolean[numCountries];
+        int[] dist = new int[numCountries];
+
+        visited[startCountry] = true;
+        dist[startCountry] = 0;
+        queue.offer(startCountry);
+
+        while (!queue.isEmpty()) {
+            int currentCountry = queue.poll();
+
+            if (currentCountry == destinationCountry) {
+                return dist[currentCountry];
+            }
+
+            for (int neighbor = 0; neighbor < numCountries; neighbor++) {
+                if (adjacencyMatrix[currentCountry][neighbor] == 1 && !visited[neighbor]) {
+                    visited[neighbor] = true;
+                    dist[neighbor] = dist[currentCountry] + 1;
+                    queue.offer(neighbor);
+                }
+            }
+        }
+
+        return -1; // Destination country not reachable
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of countries: ");
+        int numCountries = scanner.nextInt();
+
+        RiskGame game = new RiskGame(numCountries);
+
+        System.out.println("Enter the connections between countries (enter -1 -1 to finish):");
+        int country1, country2;
+        do {
+            country1 = scanner.nextInt();
+            country2 = scanner.nextInt();
+            if (country1 != -1 && country2 != -1) {
+                game.addConnection(country1, country2);
+            }
+        } while (country1 != -1 && country2 != -1);
+
+        System.out.print("Enter the starting country: ");
+        int startCountry = scanner.nextInt();
+        System.out.print("Enter the destination country: ");
+        int destinationCountry = scanner.nextInt();
+
+        int minimumConqueredCountries = game.findMinimumConqueredCountries(startCountry, destinationCountry);
+
+        if (minimumConqueredCountries != -1) {
+            System.out.println("Minimum number of countries to be conquered: " + minimumConqueredCountries);
+        } else {
+            System.out.println("Destination country is not reachable from the starting country.");
+        }
+    }
+}
